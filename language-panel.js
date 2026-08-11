@@ -1,4 +1,4 @@
-/** 西语一句 + 中英一句 - 独立 Surge Panel */
+/** 西语一句 + 中英一句 - Surge Panel / 每日通知 */
 const SPANISH_URL = "https://www.esdict.cn/";
 const ENGLISH_API = "https://open.iciba.com/dsapi/";
 let spanishResult, englishResult, completed = 0;
@@ -35,13 +35,19 @@ function completeOne() {
   if (completed < 2) return;
   const spanish = spanishResult.error ? `获取失败：${spanishResult.error}` : spanishResult.text;
   const bilingual = englishResult.error ? `获取失败：${englishResult.error}` : `${englishResult.english}\n${englishResult.chinese}`;
-  $done({
-    title: "每日语言",
-    content: `【西语一句】\n${spanish}\n\n──────────\n\n【中英一句】\n${bilingual}`,
-    icon: "character.bubble.fill",
-    "icon-color": "#2563EB",
-    url: SPANISH_URL
-  });
+
+  if (typeof $input !== "undefined") {
+    $done({
+      title: "每日语言",
+      content: `【西语一句】\n${spanish}\n\n──────────\n\n【中英一句】\n${bilingual}`,
+      icon: "character.bubble.fill",
+      "icon-color": "#2563EB",
+      url: SPANISH_URL
+    });
+  } else {
+    $notification.post("每日语言", `🇪🇸 ${spanish}`, `🇬🇧 ${bilingual}`, { url: SPANISH_URL });
+    $done();
+  }
 }
 
 function stripTags(value) { return String(value).replace(/<[^>]+>/g, " "); }
