@@ -1,13 +1,9 @@
-# Surge 诗词 · 一言 · 每日双语
+# Surge 每日内容 Panels
 
-每天获取三类内容：
+本模块提供两个相互独立的 Panel：
 
-- 今日诗词
-- 一言
-- 金山词霸每日双语：英文原句和中文翻译显示在同一栏
-- 每天 08:00 发送 Surge 本地通知
-- Panel 每小时刷新；点击 Panel 打开欧路词典
-- 不需要 API Token
+1. **诗词与一言**：保留每天 08:00 的通知推送。
+2. **西语·中英每日一句**：西语助手每日西语，以及金山词霸英文原句和中文翻译；仅显示 Panel，不发送定时通知。
 
 ## 安装
 
@@ -17,4 +13,4 @@
 https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/daily-poem.sgmodule
 ```
 
-数据接口：`https://v1.jinrishici.com/all.json`、`https://v1.hitokoto.cn/`、`https://open.iciba.com/dsapi/`。
+Panel 每小时刷新，也可以点击手动刷新。
