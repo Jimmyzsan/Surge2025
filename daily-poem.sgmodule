@@ -1,11 +1,11 @@
-#!name=诗词与一言
-#!desc=每天 08:00 推送今日诗词和一言，并在 Panel 中分成上下两栏显示
+#!name=诗词·一言·每日双语
+#!desc=每天 08:00 推送诗词、一言和中英双语句子，Panel 分三栏显示
 #!system=ios
 #!category=阅读
 
 [Script]
-诗词与一言每日推送 = type=cron,cronexp="0 8 * * *",wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/daily-poem.js,timeout=20
-诗词与一言 Panel = type=generic,timeout=20,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/daily-poem.js
+诗词一言双语每日推送 = type=cron,cronexp="0 8 * * *",wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/daily-poem.js,timeout=20
+诗词一言双语 Panel = type=generic,timeout=20,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/daily-poem.js
 
 [Panel]
-诗词与一言 = script-name=诗词与一言 Panel,update-interval=3600
+诗词·一言·每日双语 = script-name=诗词一言双语 Panel,update-interval=3600
