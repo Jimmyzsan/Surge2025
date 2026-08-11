@@ -1,77 +1,40 @@
-/** 诗词、一言与每日双语 - Surge 定时通知 / Panel */
-const SOURCES = [
-  { key: "poem", url: "https://v1.jinrishici.com/all.json", format: formatPoem },
-  { key: "hitokoto", url: "https://v1.hitokoto.cn/", format: formatHitokoto },
-  { key: "english", url: "https://open.iciba.com/dsapi/", format: formatEnglish }
-];
-const results = {};
-let completed = 0;
+/** 诗词与一言 - Surge 定时通知 / Panel */
+const POEM_API = "https://v1.jinrishici.com/all.json";
+const HITOKOTO_API = "https://v1.hitokoto.cn/";
+let poemResult, hitokotoResult, completed = 0;
 
-SOURCES.forEach(({ key, url, format }) => {
-  requestJSON(url, (error, data) => {
-    results[key] = error ? { error: String(error) } : format(data);
-    completed += 1;
-    if (completed === SOURCES.length) finish();
-  });
-});
+requestJSON(POEM_API, (error, data) => { poemResult = error ? { error } : formatPoem(data); completeOne(); });
+requestJSON(HITOKOTO_API, (error, data) => { hitokotoResult = error ? { error } : formatHitokoto(data); completeOne(); });
 
 function requestJSON(url, callback) {
   $httpClient.get({ url, timeout: 10 }, (error, response, body) => {
     if (error || !response || response.status !== 200) {
-      callback(error || `HTTP ${response ? response.status : "unknown"}`);
-      return;
+      callback(error || `HTTP ${response ? response.status : "unknown"}`); return;
     }
-    try { callback(null, JSON.parse(body)); }
-    catch (e) { callback(`解析失败：${e.message}`); }
+    try { callback(null, JSON.parse(body)); } catch (e) { callback(`解析失败：${e.message}`); }
   });
 }
 
-function finish() {
-  const poem = display(results.poem);
-  const hitokoto = display(results.hitokoto);
-  const english = display(results.english);
-
+function completeOne() {
+  completed += 1;
+  if (completed < 2) return;
+  const poemText = poemResult.error ? `获取失败：${poemResult.error}` : `${poemResult.text}\n${poemResult.source}`;
+  const hitokotoText = hitokotoResult.error ? `获取失败：${hitokotoResult.error}` : `${hitokotoResult.text}\n${hitokotoResult.source}`;
   if (typeof $input !== "undefined") {
-    $done({
-      title: "诗词 · 一言 · 双语",
-      content: `【今日诗词】\n${poem}\n\n──────────\n\n【一言】\n${hitokoto}\n\n──────────\n\n【每日双语】\n${english}`,
-      icon: "character.book.closed.fill",
-      "icon-color": "#16A34A",
-      url: "https://www.esdict.cn/"
-    });
+    $done({ title: "诗词 · 一言", content: `【今日诗词】\n${poemText}\n\n──────────\n\n【一言】\n${hitokotoText}`, icon: "text.quote", "icon-color": "#16A34A" });
   } else {
-    const poemLine = results.poem.error ? "今日诗词获取失败" : results.poem.text;
-    const hitokotoLine = results.hitokoto.error ? "一言获取失败" : results.hitokoto.text;
-    const englishLine = results.english.error ? "双语获取失败" : `${results.english.text}\n${results.english.source}`;
-    $notification.post("诗词 · 一言 · 双语", poemLine, `${hitokotoLine}\n\n${englishLine}`, {
-      url: results.hitokoto.url || "https://www.esdict.cn/"
-    });
+    $notification.post("诗词 · 一言", poemResult.error ? "今日诗词获取失败" : poemResult.text, hitokotoResult.error ? "一言获取失败" : hitokotoResult.text, { url: hitokotoResult.url || "https://hitokoto.cn/" });
     $done();
   }
 }
-
-function display(item) {
-  return item.error ? `获取失败：${item.error}` : `${item.text}\n${item.source}`;
-}
 function formatPoem(data) {
   const text = clean(data.content) || "愿你今日心有诗意。";
-  const author = clean(data.author) || "佚名";
-  const origin = clean(data.origin), category = clean(data.category);
+  const author = clean(data.author) || "佚名", origin = clean(data.origin), category = clean(data.category);
   return { text, source: [category, author, origin ? `《${origin}》` : ""].filter(Boolean).join(" · ") };
 }
 function formatHitokoto(data) {
   const text = clean(data.hitokoto) || "愿你今日有所触动。";
   const author = clean(data.from_who), from = clean(data.from), uuid = clean(data.uuid);
-  return {
-    text,
-    source: [author, from ? `《${from}》` : ""].filter(Boolean).join(" · ") || "一言",
-    url: uuid ? `https://hitokoto.cn/?uuid=${uuid}` : "https://hitokoto.cn/"
-  };
-}
-function formatEnglish(data) {
-  return {
-    text: clean(data.content) || "Keep learning, keep growing.",
-    source: clean(data.note) || "持续学习，不断成长。"
-  };
+  return { text, source: [author, from ? `《${from}》` : ""].filter(Boolean).join(" · ") || "一言", url: uuid ? `https://hitokoto.cn/?uuid=${uuid}` : "https://hitokoto.cn/" };
 }
 function clean(value) { return typeof value === "string" ? value.trim() : ""; }
