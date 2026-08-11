@@ -1,5 +1,5 @@
 #!name=诗词与一言
-#!desc=08:00 推送诗词与一言；12:00、17:00 推送西语和中英每日一句；包含两个独立 Panel
+#!desc=保留现有全部内容与推送，并新增独立的有道每日一句 Panel（点击查看配图）
 #!system=ios
 #!category=阅读
 
@@ -9,7 +9,9 @@
 每日语言中午推送 = type=cron,cronexp="0 12 * * *",wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/language-panel.js,timeout=20
 每日语言下午推送 = type=cron,cronexp="0 17 * * *",wake-system=1,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/language-panel.js,timeout=20
 每日语言 Panel = type=generic,timeout=20,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/language-panel.js
+有道每日一句 Panel = type=generic,timeout=20,script-path=https://raw.githubusercontent.com/Jimmyzsan/Surge2025/main/youdao-panel.js
 
 [Panel]
 诗词与一言 = script-name=诗词与一言 Panel,update-interval=3600
 西语·中英每日一句 = script-name=每日语言 Panel,update-interval=3600
+有道每日一句 = script-name=有道每日一句 Panel,update-interval=3600
